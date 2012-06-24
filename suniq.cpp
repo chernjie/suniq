@@ -1,4 +1,3 @@
-
 #include <map>
 #include <iostream>
 #include <fstream>
@@ -27,11 +26,14 @@ int main( int argc, char * argv [] ){
     std::map<std::string, int> line_map;
     int i(2);
     std::list <std::string> args;
+    // read in arguments
     for ( ; i < argc+1; ++i) {
         args.push_back( std::string(argv[i-1] ));
     }
+    // check if -r supplied
     bool reverse = args.end () != find(args.begin(), args.end(), "-r");
     std::list<std::istream *> streams;
+    // check if we're dealing with data being piped in or as file arguments
     if (isatty(fileno(stdin))){
         std::list<std::string>::iterator argiter = args.begin();
         while ( argiter != args.end() ){
@@ -44,17 +46,20 @@ int main( int argc, char * argv [] ){
     else
         streams.push_back( &std::cin );
     std::list<std::istream *>::iterator streamiter = streams.begin();
+    // read in all lines
     while ( streamiter != streams.end()) { 
         while ( !(**streamiter).eof() ){
             line_map[line] = line_map[line]+1;
             getline(**(streamiter), line);
         }
+        // don't free up cin
         if ( **streamiter  != std::cin  && ((std::ifstream *)(*streamiter))->is_open()){
             ((std::ifstream *)(*streamiter))->close();
             delete *streamiter;
         }
         ++streamiter;
     }
+    // flip the map so we can print by occurence
     std::multimap<int , std::string> flipped = flip_map ( line_map );
     std::multimap<int, std::string>::iterator iter = reverse ? flipped.end() : flipped.begin() ;
     if ( reverse )
