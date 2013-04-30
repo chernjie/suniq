@@ -1,73 +1,59 @@
-#include <map>
 #include <iostream>
 #include <fstream>
-#include <set>
-#include <list>
-#include <stdio.h>
+#include <string>
+#include <cstring>
+#include <map>
+#include <iterator>
 
-template<typename A, typename B>
-std::pair<B,A> flip_pair(const std::pair<A,B> &p)
+template <typename Iter>
+void print (Iter i, Iter end)
 {
-    return std::pair<B,A>(p.second, p.first);
+    for (; i != end; std::advance (i, 1))
+        std::cout << '\t' << i->first << '\t' << i->second << std::endl;
 }
 
-template<typename A, typename B>
-std::multimap<B,A> flip_map(const std::map<A,B> &src)
+void read_lines (std::istream &in, std::map<std::string, int> &map)
 {
-    std::multimap<B,A> dst;
-    std::transform(src.begin(), src.end(), std::inserter(dst, dst.begin()), 
-                   flip_pair<A,B>);
-    return dst;
-}
-
-
-int main( int argc, char * argv [] ){
-    std::string line;
-    std::map<std::string, int> line_map;
-    int i(2);
-    std::list <std::string> args;
-    // read in arguments
-    for ( ; i < argc+1; ++i) {
-        args.push_back( std::string(argv[i-1] ));
+    std::string buf;
+    while (std::getline (in, buf)) {
+        auto iterp = map.insert ({buf, 1});
+            if (!iterp.second)
+                ++iterp.first->second;
     }
-    // check if -r supplied
-    bool reverse = args.end () != find(args.begin(), args.end(), "-r");
-    std::list<std::istream *> streams;
-    // check if we're dealing with data being piped in or as file arguments
-    if (isatty(fileno(stdin))){
-        std::list<std::string>::iterator argiter = args.begin();
-        while ( argiter != args.end() ){
-            std::ifstream * fp = new std::ifstream(((*(argiter)).c_str()));
-            if (fp->good())
-                streams.push_back( fp );
-            ++argiter;
+}
+
+int main (int argc, char **argv)
+{
+    std::map<std::string, int> map;
+
+    bool reverse = false;
+
+    for (char **i = argv + 1; *i; ++i) {
+        if (std::strcmp (*i, "-r") == 0) {
+            reverse = true;
+            continue;
         }
+
+        std::ifstream f (*i);
+
+        if (!f)
+            continue;
+
+        read_lines (f, map);
     }
+
+    if (argc - (int)reverse == 1)
+        read_lines (std::cin, map);
+
+    std::multimap<int, std::string> revmap;
+    for (const auto &p : map)
+        revmap.insert ({p.second, p.first});
+
+    if (reverse)
+        print (revmap.rbegin (), revmap.rend ());
+
     else
-        streams.push_back( &std::cin );
-    std::list<std::istream *>::iterator streamiter = streams.begin();
-    // read in all lines
-    while ( streamiter != streams.end()) { 
-        while ( !(**streamiter).eof() ){
-            line_map[line] = line_map[line]+1;
-            getline(**(streamiter), line);
-        }
-        // don't free up cin
-        if ( **streamiter  != std::cin  && ((std::ifstream *)(*streamiter))->is_open()){
-            ((std::ifstream *)(*streamiter))->close();
-            delete *streamiter;
-        }
-        ++streamiter;
-    }
-    // flip the map so we can print by occurence
-    std::multimap<int , std::string> flipped = flip_map ( line_map );
-    std::multimap<int, std::string>::iterator iter = reverse ? flipped.end() : flipped.begin() ;
-    if ( reverse )
-        iter--;
-    while ( iter != (reverse ? flipped.begin() : flipped.end()) ){
-        std::cout << iter->first << " " << iter->second <<  std::endl;
-        reverse  ? --iter : ++iter;
-    }
-    if ( reverse )
-        std::cout << iter->first << " " << iter->second <<  std::endl;
+        print (revmap.begin (), revmap.end ());
+
+    return 0;
 }
