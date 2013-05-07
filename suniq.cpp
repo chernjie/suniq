@@ -17,8 +17,8 @@ void read_lines (std::istream &in, std::map<std::string, int> &map)
     std::string buf;
     while (std::getline (in, buf)) {
         auto iterp = map.insert ({buf, 1});
-            if (!iterp.second)
-                ++iterp.first->second;
+        if (!iterp.second)
+            ++iterp.first->second;
     }
 }
 
