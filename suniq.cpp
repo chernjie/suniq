@@ -36,9 +36,6 @@ int main (int argc, char **argv)
 
         std::ifstream f (*i);
 
-        if (!f)
-            continue;
-
         read_lines (f, map);
     }
 
