@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include <unordered_map>
 #include <map>
 #include <iterator>
 
@@ -12,7 +13,7 @@ void print (Iter i, Iter end)
         std::cout << '\t' << i->first << '\t' << i->second << std::endl;
 }
 
-void read_lines (std::istream &in, std::map<std::string, int> &map)
+void read_lines (std::istream &in, std::unordered_map<std::string, int> &map)
 {
     std::string buf;
     while (std::getline (in, buf)) {
@@ -24,7 +25,7 @@ void read_lines (std::istream &in, std::map<std::string, int> &map)
 
 int main (int argc, char **argv)
 {
-    std::map<std::string, int> map;
+    std::unordered_map<std::string, int> map;
 
     bool reverse = false;
 
