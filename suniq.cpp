@@ -20,17 +20,14 @@ int main( int argc, char * argv [] ){
     // check if -r supplied
     bool reverse = args.end () != find(args.begin(), args.end(), "-r");
     std::list<std::istream *> streams;
-    // check if we're dealing with data being piped in or as file arguments
-    if (isatty(fileno(stdin))){
-        std::list<std::string>::iterator argiter = args.begin();
-        while ( argiter != args.end() ){
-            std::ifstream * fp = new std::ifstream(((*(argiter)).c_str()));
-            if (fp->good())
-                streams.push_back( fp );
-            ++argiter;
-        }
+    std::list<std::string>::iterator argiter = args.begin();
+    while ( argiter != args.end() ){
+        std::ifstream * fp = new std::ifstream(((*(argiter)).c_str()));
+        if (fp->good())
+            streams.push_back( fp );
+        ++argiter;
     }
-    else
+    if ( streams.empty() || !isatty(fileno(stdin)))
         streams.push_back( &std::cin );
     std::list<std::istream *>::iterator streamiter = streams.begin();
     // read in all lines
@@ -42,8 +39,7 @@ int main( int argc, char * argv [] ){
             }
         }
         // don't free up cin
-        if ( **streamiter  != std::cin  && ((std::ifstream *)(*streamiter))->is_open()){
-            ((std::ifstream *)(*streamiter))->close();
+        if ( **streamiter  != std::cin ){
             delete *streamiter;
         }
         ++streamiter;
