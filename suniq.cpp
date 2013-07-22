@@ -1,4 +1,4 @@
-#include <map>
+#include <unordered_map>
 #include <iostream>
 #include <algorithm>
 #include <fstream>
@@ -10,7 +10,7 @@
 
 int main( int argc, char * argv [] ){
     std::string line;
-    std::map<std::string, int> line_map;
+    std::unordered_map<std::string, int> line_map;
     int i(2);
     std::list <std::string> args;
     // read in arguments
