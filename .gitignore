@@ -1,0 +1,13 @@
+.deps
+Makefile
+Makefile.in
+configure
+config.*
+*.o
+suniq
+compile
+depcomp
+install-sh
+missing
+autom4te.cache
+aclocal.m4
