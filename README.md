@@ -10,10 +10,10 @@ $ cat list | suniq -r
 
 ### Installation
 ```shell
-$ ./configure && make && make install
+$ ./autogen.sh --prefix=$PREFIX && make && make install
 ```
 
-If you use brew on MacOSX 
+If you use homebrew on MacOSX 
 ```shell
 $ brew install suniq
 ```
